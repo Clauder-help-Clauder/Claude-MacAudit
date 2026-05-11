@@ -1,0 +1,6 @@
+Tests/MacAuditTests/IPFetcherTests.swift
+Tests/MacAuditTests/IPModelsTests.swift
+Tests/MacAuditTests/IPCacheTests.swift
+Tests/MacAuditTests/UndoSafetyTests.swift
+docs/references/*
+builds/*
