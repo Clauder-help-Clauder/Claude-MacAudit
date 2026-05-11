@@ -1,6 +1,6 @@
 <div align="center">
 
-# MacAudit
+# MacAudit - [ Claude / Codex / ChatGPT / Gemini AI Coding 效能优化 ]
 
 **macOS 全面系统安全审计与优化工具包**
 
