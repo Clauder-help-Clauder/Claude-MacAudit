@@ -1,6 +1,6 @@
 <div align="center">
 
-# MacAudit - [ Claude / Codex / ChatGPT / Gemini AI Coding 效能优化 ]
+# MacAudit - [ Claude / Codex / ChatGPT / Gemini AI Coding Performance Optimization ]
 
 **Comprehensive macOS Security Audit & Optimization Toolkit**
 
@@ -17,6 +17,8 @@
 ---
 
 MacAudit is a native macOS system security audit and optimization tool built in **Swift 6 with strict concurrency**. It performs **400+ automated checks** across 12 audit modules, covering security hardening, privacy protection, network configuration, performance tuning, and AI service compatibility — all with **zero third-party runtime dependencies**.
+
+> 🛠 **Live build metrics** — Version: **v0.3.1** · Released: **2026-05-12** · Cumulative AI tokens invested (v0.1.0 → present): **~2.6B+ I/O + ~16B+ cache** (across Claude / GPT / Gemini / Codex / local models and hundreds of sessions)
 
 > **From Python script to Swift native app — 1 month, 5 milestones, 5 rounds of expert audits, 720+ tests, and real-machine validation across two macOS generations.**
 
@@ -469,7 +471,7 @@ Six frontier AI models collaborated across the full development lifecycle, each 
 |--------|-------|
 | Total development duration | ~30 days |
 | AI models used | 6+ |
-| Estimated total tokens consumed | **~1.3B+** input/output + **~8B+** cache (across all models and sessions) |
+| Estimated total tokens consumed | **~2.6B+** input/output + **~16B+** cache (across all models and sessions) |
 | AI-generated lines of code | 10,000+ (production + tests) |
 | AI-generated test cases | 720+ |
 | AI-conducted expert audit rounds | 15+ |
