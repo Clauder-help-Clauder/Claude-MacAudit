@@ -121,6 +121,15 @@ defaults write com.apple.SubmitDiagInfo AutoSubmit -bool true && defaults write 
                        command: "source ~/.zshrc 2>/dev/null; echo ${NODE_TLS_REJECT_UNAUTHORIZED:-not set}",
                        expected: "not set",
                        priority: .a0),
+            AuditCheck(id: "m10.env_no_openai_base", name: "OPENAI_BASE_URL 未自定义（Codex 服务端危险变量）", module: id,
+                       description: """
+反向检测: OPENAI_BASE_URL 若被设置，会让 Codex 客户端改走自定义端点
+与 ANTHROPIC_BASE_URL 机理相同：OpenAI 服务端会把非官方端点视作高风险标签
+修复: sed -i '' '/export OPENAI_BASE_URL=/d' ~/.zshrc
+""",
+                       command: "source ~/.zshrc 2>/dev/null; echo ${OPENAI_BASE_URL:-not set}",
+                       expected: "not set",
+                       priority: .a0),
             AuditCheck(id: "m10.env_no_telemetry", name: "OTel 遥测未启用", module: id,
                        description: "反向检测: CLAUDE_CODE_ENABLE_TELEMETRY 若被设置为 1，会开启 OpenTelemetry 数据采集（默认关闭）\n修复: 从 ~/.zshrc 删除 export CLAUDE_CODE_ENABLE_TELEMETRY=1",
                        command: "source ~/.zshrc 2>/dev/null; echo ${CLAUDE_CODE_ENABLE_TELEMETRY:-not set}",
@@ -227,7 +236,7 @@ jq 'del(.network.httpProxyPort) | del(.network.allowedDomains) | del(.network.al
                        command: "cat ~/.claude/settings.json 2>/dev/null | grep -c 'allowedDomains'; true",
                        expected: "1",
                        fixRisk: .low,
-                       fixCommand: "which jq > /dev/null 2>&1 && jq '.network = (.network // {}) | .network.allowedDomains = [\"api.anthropic.com\",\"*.anthropic.com\",\"statsig.anthropic.com\",\"sentry.io\"]' ~/.claude/settings.json > ~/.claude/_tmp_settings.json && mv ~/.claude/_tmp_settings.json ~/.claude/settings.json || echo 'jq not installed, run: brew install jq'",
+                       fixCommand: "which jq > /dev/null 2>&1 && jq '.network = (.network // {}) | .network.allowedDomains = [\"api.anthropic.com\",\"*.anthropic.com\",\"statsig.anthropic.com\",\"sentry.io\",\"api.openai.com\",\"*.openai.com\",\"chatgpt.com\",\"oaistatic.com\"]' ~/.claude/settings.json > ~/.claude/_tmp_settings.json && mv ~/.claude/_tmp_settings.json ~/.claude/settings.json || echo 'jq not installed, run: brew install jq'",
                        priority: .a0),
             AuditCheck(id: "m10.sandbox_managed", name: "仅允许托管域名", module: id,
                        description: sandboxAddCmd,
@@ -362,6 +371,60 @@ jq 'del(.network.httpProxyPort) | del(.network.allowedDomains) | del(.network.al
             expected: "0", risk: .safe,
             networkRisk: true,
         priority: .a2))
+        list.append(AuditCheck(
+            id: "m10.hosts_openai_block", name: "hosts 拉黑 OpenAI 域名（代理断开 fallback）", module: id,
+            description: """
+添加防护: 当代理断开时阻止 Codex 直连。在 /etc/hosts 追加以下行（对应 AIBrands.codex.domains 全集）:
+0.0.0.0 api.openai.com
+0.0.0.0 chatgpt.com
+0.0.0.0 oaistatic.com
+0.0.0.0 oaiusercontent.com
+一键执行:
+sudo sh -c 'printf "0.0.0.0 api.openai.com\\n0.0.0.0 chatgpt.com\\n0.0.0.0 oaistatic.com\\n0.0.0.0 oaiusercontent.com\\n" >> /etc/hosts && dscacheutil -flushcache && killall -HUP mDNSResponder'
+取消防护: 手动编辑 /etc/hosts 删除上述四行
+""",
+            command: "grep -c -E '^0\\.0\\.0\\.0[[:space:]]+(api\\.openai\\.com|chatgpt\\.com|oaistatic\\.com|oaiusercontent\\.com)' /etc/hosts 2>/dev/null | awk '{print ($1>=4)?1:0}'",
+            expected: "1",
+            priority: .a0
+        ))
+
+        // 数据驱动：扫描所有支持的代理客户端配置，验证覆盖所有 AI 品牌域名
+        let allAIDomains = AIBrands.all.flatMap(\.domains)
+        let proxyDirsExpanded = ProxyClients.all
+            .map { $0.configDir.replacingOccurrences(of: "~", with: "$HOME") }
+        let domainRegex = allAIDomains
+            .map { $0.replacingOccurrences(of: ".", with: "\\.") }
+            .joined(separator: "|")
+        let requiredDomainCount = allAIDomains.count
+        let shellDirsArray = proxyDirsExpanded
+            .map { "\"\($0)\"" }
+            .joined(separator: " ")
+        let proxyDescriptionList = ProxyClients.all
+            .map { "- \($0.name): \($0.configDir)" }
+            .joined(separator: "\n")
+        let proxyScanCmd = "ok=0; for d in \(shellDirsArray); do [ -d \"$d\" ] || continue; hit=$(grep -rohE '\(domainRegex)' \"$d\" 2>/dev/null | sort -u | wc -l | tr -d ' '); if [ \"$hit\" -ge \(requiredDomainCount) ]; then ok=1; break; fi; done; [ \"$ok\" -eq 1 ] && echo ok || echo missing"
+
+        list.append(AuditCheck(
+            id: "m10.proxy_ai_domains",
+            name: "代理软件覆盖 AI 品牌域名（Surge/Clash/V2Ray/Shadowrocket）",
+            module: id,
+            description: """
+扫描以下代理客户端的配置目录，检查是否覆盖所有 AI 品牌域名（Claude + Codex）：
+\(proxyDescriptionList)
+
+需覆盖的域名（\(requiredDomainCount) 个）: \(allAIDomains.joined(separator: ", "))
+
+添加防护:
+1. 选择一款代理客户端（推荐 Surge）
+2. 在其规则配置中为所有上述域名添加走代理的规则
+3. 参考 docs/proxy_rules.md 的 Surge / Clash 配置示例
+
+取消防护: 从代理规则中移除对应 DOMAIN-SUFFIX 条目
+""",
+            command: proxyScanCmd,
+            expected: "ok",
+            priority: .a0
+        ))
         return list
     }
 
@@ -487,7 +550,7 @@ jq 'del(.network.httpProxyPort) | del(.network.allowedDomains) | del(.network.al
             priority: .a3),
             AuditCheck(
             id: "m10.surge_stun_reject", name: "Surge WebRTC STUN 拦截", module: id,
-            description: "添加防护: 在 Surge 配置 [Rule] 段加入:\nAND,((PROTOCOL,STUN),(NOT,((OR,((DOMAIN-SUFFIX,anthropic.com),(DOMAIN-SUFFIX,claude.ai)))))),REJECT\n取消防护: 从 Surge 配置删除上述规则",
+            description: "添加防护: 在 Surge 配置 [Rule] 段加入:\nAND,((PROTOCOL,STUN),(NOT,((OR,((DOMAIN-SUFFIX,anthropic.com),(DOMAIN-SUFFIX,claude.ai),(DOMAIN-SUFFIX,openai.com),(DOMAIN-SUFFIX,chatgpt.com)))))),REJECT\n取消防护: 从 Surge 配置删除上述规则",
             command: "find ~/Library/Application\\ Support/Surge -name '*.conf' 2>/dev/null -exec grep -li 'PROTOCOL,STUN\\|stun.*REJECT' {} \\; | wc -l | tr -d ' '",
             expected: "1", risk: .safe,
             priority: .a3),

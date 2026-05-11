@@ -19,7 +19,7 @@ struct ReportGenerator: Sendable {
         md += "| 生成时间 | \(now) |\n"
         md += "| 系统版本 | \(version?.displayName ?? "未知") (\(MacOSVersion.versionString)) |\n"
         md += "| 设备类型 | \(device.displayName) |\n"
-        md += "| MacAudit | v0.2.13 |\n\n"
+        md += "| MacAudit | v0.3.1 |\n\n"
 
         // 总摘要
         let total = results.count
@@ -138,7 +138,7 @@ struct ReportGenerator: Sendable {
         }
 
         let dict: [String: Any] = [
-            "version": "0.2.13",
+            "version": "0.3.1",
             "timestamp": now,
             "system": systemDict,
             "summary": summaryDict,

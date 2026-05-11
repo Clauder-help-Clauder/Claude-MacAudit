@@ -29,7 +29,7 @@ func claudeProtectionModuleMetadata() {
 func claudeProtectionChecksCountSequoiaV2() {
     let module = ClaudeProtectionModule()
     let checks = module.checks(for: .sequoia, device: .laptop, arch: .arm64)
-    #expect(checks.count >= 30)
+    #expect(checks.count >= 33)
     #expect(module.deferredChecks.count >= 12)
 }
 
@@ -37,7 +37,7 @@ func claudeProtectionChecksCountSequoiaV2() {
 func claudeProtectionChecksCountTahoeV2() {
     let module = ClaudeProtectionModule()
     let checks = module.checks(for: .tahoe, device: .desktop, arch: .arm64)
-    #expect(checks.count >= 30)
+    #expect(checks.count >= 33)
     #expect(module.deferredChecks.count >= 12)
 }
 
@@ -195,6 +195,60 @@ func claudeProtectionTlsSkipCheck() {
     let check = checks.first { $0.id == "m10.env_no_tls_skip" }
     #expect(check != nil)
     #expect(check?.expectedValue == "not set")
+}
+
+@Test("M10 新增：OPENAI_BASE_URL 反向检测（Codex 服务端危险变量）")
+func claudeProtectionOpenAIBaseCheck() {
+    let module = ClaudeProtectionModule()
+    let checks = module.checks(for: .sequoia, device: .laptop, arch: .arm64)
+    let check = checks.first { $0.id == "m10.env_no_openai_base" }
+    #expect(check != nil)
+    #expect(check?.expectedValue == "not set")
+    #expect(check?.priority == .a0)
+}
+
+@Test("M10 新增：hosts OpenAI 域名拉黑（代理断开 fallback）")
+func claudeProtectionHostsOpenAIBlockCheck() {
+    let module = ClaudeProtectionModule()
+    let checks = module.checks(for: .sequoia, device: .laptop, arch: .arm64)
+    let check = checks.first { $0.id == "m10.hosts_openai_block" }
+    #expect(check != nil)
+    #expect(check?.expectedValue == "1")
+    #expect(check?.priority == .a0)
+}
+
+@Test("M10 新增：proxy_ai_domains 代理软件 AI 域名覆盖扫描")
+func claudeProtectionProxyAIDomainsCheck() {
+    let module = ClaudeProtectionModule()
+    let checks = module.checks(for: .sequoia, device: .laptop, arch: .arm64)
+    let check = checks.first { $0.id == "m10.proxy_ai_domains" }
+    #expect(check != nil)
+    #expect(check?.expectedValue == "ok")
+    #expect(check?.priority == .a0)
+    // 命令必须引用至少一个代理软件路径和一个 AI 域名
+    #expect(check?.detectionCommand.contains("Surge") == true)
+    #expect(check?.detectionCommand.contains("anthropic.com") == true)
+    #expect(check?.detectionCommand.contains("openai.com") == true)
+}
+
+@Test("M10 sandbox_domains fix 包含 OpenAI 域名")
+func claudeProtectionSandboxDomainsIncludesOpenAI() {
+    let module = ClaudeProtectionModule()
+    let checks = module.checks(for: .sequoia, device: .laptop, arch: .arm64)
+    let check = checks.first { $0.id == "m10.sandbox_domains" }
+    #expect(check != nil)
+    #expect(check?.fixCommand?.contains("api.openai.com") == true)
+    #expect(check?.fixCommand?.contains("api.anthropic.com") == true)
+}
+
+@Test("M10 surge_stun_reject description 包含 OpenAI 白名单")
+func claudeProtectionSurgeStunIncludesOpenAI() {
+    let module = ClaudeProtectionModule()
+    let allChecks = module.checks(for: .sequoia, device: .laptop, arch: .arm64) + module.deferredChecks
+    let check = allChecks.first { $0.id == "m10.surge_stun_reject" }
+    #expect(check != nil)
+    #expect(check?.description.contains("openai.com") == true || check?.description.contains("chatgpt.com") == true)
+    #expect(check?.description.contains("anthropic.com") == true)
 }
 
 @Test("M10 deferred: 时区环境信号检测（info）")

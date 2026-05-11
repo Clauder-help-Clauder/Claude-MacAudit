@@ -28,7 +28,7 @@ enum AuditMode: String, CaseIterable {
 // MARK: - App Constants
 
 enum AppConstants {
-    static let version = "v0.3.0"
+    static let version = "v0.3.1"
     static let displayName = "MacAudit \(version)"
     static let buildInfo = "Swift 6.0 · Universal Binary"
     static let moduleCount = 12

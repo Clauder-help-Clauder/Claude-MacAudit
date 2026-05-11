@@ -89,6 +89,8 @@ Reliable Claude/Codex subscription channel throughout the entire development and
 
 > **MacAudit is the only Swift-native macOS security audit tool on GitHub**, and the only tool that combines comprehensive macOS system auditing with AI service protection in a single package. No other tool covers this intersection.
 
+> 💡 **Account hygiene tip** — Fresh macOS install + iCloud-based Claude/Codex subscription (App Store IAP) removes your credit card from the risk chain. Apple adds a ~30% surcharge, but eliminates bank chargeback and fraud labels that commonly cascade into AI account bans. See [`docs/proxy_rules.md`](docs/proxy_rules.md#账号注册最佳实践账号层防护) for the full rationale.
+
 ## CLI vs. GUI
 
 | | CLI (`macaudit`) | GUI (`MacAuditApp`) |

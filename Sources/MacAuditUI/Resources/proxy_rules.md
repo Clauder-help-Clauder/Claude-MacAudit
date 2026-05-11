@@ -1,6 +1,6 @@
 # PROXY RULES
 
-> 所有 Claude Code 流量必须通过住宅 IP（Residential IP）代理出口
+> 所有 Claude Code / Codex 流量必须通过住宅 IP（Residential IP）代理出口
 
 ---
 
@@ -31,7 +31,7 @@
 2. 🔴 **全局模式**：代理必须覆盖所有流量（含 CLI、npm、git），不能仅代理浏览器
 3. 🔴 **IPv6 全关**：IPv6 会绕过代理直连暴露真实 IP（`ipv6=false` / 系统级关闭）
 4. 🔴 **DNS 防泄漏**：使用 Fake IP（198.18.0.2）或加密 DNS（DoH/DoT），防止 ISP 窥探
-5. 🔴 **Claude 域名单独走稳定节点**：`anthropic.com` / `claude.ai` 等域名建议固定出口，避免频繁切换 IP
+5. 🔴 **AI 服务域名单独走稳定节点**：`anthropic.com` / `claude.ai` / `openai.com` / `chatgpt.com` 建议固定出口，避免频繁切换 IP。Claude 和 Codex 可共用同一住宅 IP（两家公司风控系统独立）
 
 ---
 
@@ -64,30 +64,60 @@ DOMAIN-KEYWORD,anthropic,Claude-Stable
 DOMAIN-KEYWORD,claude,Claude-Stable
 ```
 
+### [Rule] Codex / OpenAI 专用规则
+
+```ini
+# Codex / OpenAI 全域名 → 固定出口
+# 可和 Claude 共用 AI-Stable 节点（两家公司风控独立，同住宅 IP 无风险）
+DOMAIN-SUFFIX,openai.com,AI-Stable
+DOMAIN-SUFFIX,chatgpt.com,AI-Stable
+DOMAIN-SUFFIX,oaistatic.com,AI-Stable
+DOMAIN-SUFFIX,oaiusercontent.com,AI-Stable
+DOMAIN-KEYWORD,openai,AI-Stable
+DOMAIN-KEYWORD,chatgpt,AI-Stable
+
+# 风控/遥测（OpenAI 和 Anthropic 一样用 Statsig + Sentry + Datadog）
+DOMAIN-SUFFIX,statsig.com,AI-Stable
+DOMAIN-SUFFIX,sentry.io,AI-Stable
+DOMAIN-SUFFIX,cloudflareinsights.com,AI-Stable
+```
+
+> 💡 上方 Claude 规则里的 `Claude-Stable` 也可以改名为统一的 `AI-Stable`，让 Claude + Codex 共享同一个出口节点（推荐，一般家宽用户只有一个住宅 IP）。
+
 ### [Rule] STUN/WebRTC 防泄漏
 
 ```ini
-# 阻止所有非 Claude 域名的 STUN 请求
-AND,((PROTOCOL,STUN),(NOT,((OR,((DOMAIN-SUFFIX,anthropic.com),(DOMAIN-SUFFIX,claude.ai)))))),REJECT
+# 阻止所有非 Claude/Codex 域名的 STUN 请求
+AND,((PROTOCOL,STUN),(NOT,((OR,((DOMAIN-SUFFIX,anthropic.com),(DOMAIN-SUFFIX,claude.ai),(DOMAIN-SUFFIX,openai.com),(DOMAIN-SUFFIX,chatgpt.com)))))),REJECT
 ```
 
-### [Host] Claude 域名 DNS 加密
+### [Host] Claude / Codex 域名 DNS 加密
 
 ```ini
-# 强制 Claude 域名使用 Google DoH 解析
+# 强制 AI 服务域名使用 Google DoH 解析
 *.anthropic.com = server:https://dns.google/dns-query
 *.claude.ai = server:https://dns.google/dns-query
 *.claude.com = server:https://dns.google/dns-query
 *.statsigapi.net = server:https://dns.google/dns-query
+*.openai.com = server:https://dns.google/dns-query
+*.chatgpt.com = server:https://dns.google/dns-query
+*.oaistatic.com = server:https://dns.google/dns-query
 ```
 
-### [Proxy Group] Claude 稳定出口
+### [Proxy Group] 稳定出口（Claude + Codex 共用一个）
 
 ```ini
-# fallback 策略：主节点不可用时自动切换备节点
-Claude-Stable = fallback, 主节点, 备节点1, 备节点2,
+# 推荐：Claude + Codex 共用同一个住宅 IP 节点
+AI-Stable = fallback, 主节点, 备节点1, 备节点2,
   url=http://cp.cloudflare.com/generate_204, interval=300, timeout=5
 ```
+
+### ⚠️ Claude / Codex 账号使用最佳实践
+
+- 🟢 **Claude 和 Codex 可共用同一个住宅 IP 出口**（两家公司风控系统独立）
+- 🔴 不要频繁切换出口 IP（每次切换都会增加风控标记）
+- 🟢 严格 1 机器 1 住宅 IP 1 组账号的组合最稳定
+- 🔴 被封后 deviceId 被永久关联，换账号无法恢复，需重置对应 AI 服务的本地状态
 
 ---
 

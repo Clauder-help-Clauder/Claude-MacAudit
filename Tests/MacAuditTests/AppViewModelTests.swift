@@ -283,7 +283,7 @@ struct AppViewModelTests {
         let summaries = [ModuleSummary(id: "privacy", name: "隐私", passed: 1, failed: 0, total: 1)]
         vm.savedSnapshot = SavedAuditSnapshot(
             timestamp: Date(),
-            version: "v0.3.0",
+            version: "v0.3.1",
             systemScore: 100,
             results: results,
             moduleSummaries: summaries
@@ -312,7 +312,7 @@ struct AppViewModelTests {
 
     @Test("AppConstants has expected values")
     func appConstants() {
-        #expect(AppConstants.version == "v0.3.0")
+        #expect(AppConstants.version == "v0.3.1")
         #expect(AppConstants.moduleCount == 12)
         #expect(AppConstants.checkCount == "476+")
     }

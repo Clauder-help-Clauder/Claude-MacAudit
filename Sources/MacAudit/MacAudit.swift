@@ -9,7 +9,7 @@ struct MacAudit: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "macaudit",
         abstract: "Mac 系统审查工具",
-        version: "0.3.0"
+        version: "0.3.1"
     )
 
     /// 指定要运行的单一模块 ID，如 system_info、security、claude；不传则运行全部模块
@@ -250,7 +250,7 @@ struct MacAudit: AsyncParsableCommand {
     /// 打印工具版本、系统版本、设备类型和时间戳组成的 Banner 头部信息
     private func printBanner(version: MacOSVersion?, device: DeviceType) {
         Layout.printEmpty()
-        Layout.print(ANSIColor.bold.wrap("MacAudit v0.2.13"))
+        Layout.print(ANSIColor.bold.wrap("MacAudit v0.3.1"))
         Layout.print("系统: \(version?.displayName ?? "未知") (\(MacOSVersion.versionString))")
         Layout.print("设备: \(device.displayName)")
         Layout.print("时间: \(ISO8601DateFormatter().string(from: Date()))")
