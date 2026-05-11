@@ -38,6 +38,17 @@ Reliable Claude/Codex subscription channel throughout the entire development and
 
 ---
 
+## What's New
+
+Latest 5 releases. Full history: [Releases](https://github.com/Clauder-help-Clauder/Claude-MacAudit/releases) · [CHANGELOG](CHANGELOG.md).
+
+| Version | Date | Highlights | Release |
+|---------|------|------------|---------|
+| **v0.3.1** | 2026-05-12 | Codex / OpenAI account protection (3 new A0 checks), AIBrands extensible architecture, iCloud subscription recommendation | [→ v0.3.1](https://github.com/Clauder-help-Clauder/Claude-MacAudit/releases/tag/v0.3.1) |
+| v0.3.0 | 2026-05-11 | Stable release — idempotent fixes (sed delete-then-append), verified execution, security hardened, 10-round VM stability | [→ v0.3.0](https://github.com/Clauder-help-Clauder/Claude-MacAudit/releases/tag/v0.3.0) |
+
+---
+
 ## Table of Contents
 
 - [Why MacAudit?](#why-macaudit)
