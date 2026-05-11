@@ -1,5 +1,7 @@
 # PROXY RULES
 
+[English](proxy_rules_EN.md) · [中文](proxy_rules.md)
+
 > 所有 Claude Code / Codex 流量必须通过住宅 IP（Residential IP）代理出口
 
 ---
