@@ -1,89 +1,57 @@
-# MacAudit v0.3.1 — Codex Protection + AIBrands Extensible Architecture
+# MacAudit v0.3.2 — GUI Window Polish
 
-**Release Date**: 2026-05-12
+**Release Date**: 2026-05-13
 **Build**: Universal Binary (arm64 + x86_64), Release optimized
 **Tests**: 724/724 passing
-**VM Validation**: macOS 15.6.1 (Sequoia) + macOS 26.0 (Tahoe), full fix/undo closed-loop verified
+**Scope**: GUI visual polish only — zero detection logic changes
 
 ---
 
-## What's New (since v0.3.0)
+## What's New (since v0.3.1)
 
-### 🆕 Codex / OpenAI Account Protection
+### 🐛 Fixed
 
-MacAudit v0.3.1 extends its AI-service protection beyond Claude to cover **Codex / OpenAI** accounts. Three new A0-priority M10 detection checks are added, with two existing checks expanded to include OpenAI domains:
+- **GUI 默认窗口裁掉 Logo**（v0.3.1 用户反馈）
+  - `defaultSize`：1200 × 760 → **1440 × 860**
+  - `minSize`：1000 × 680 → **1280 × 780**
+  - LOGO 顶部 padding：16 → **35**（避让 macOS 左上角红绿黄按钮）
+- `MacAuditApp` launcher 补上 `.windowResizability(.contentMinSize)` modifier，修复原先只在 `MacAuditUI` 备份版有的不一致
 
-- **`m10.env_no_openai_base`** — Reverse-detect dangerous `OPENAI_BASE_URL` env var (mirrors the existing `ANTHROPIC_BASE_URL` check). Setting this redirects Codex to non-official endpoints, which OpenAI's server-side risk-control flags as high-risk.
-- **`m10.hosts_openai_block`** — `/etc/hosts` fallback check: verifies all 4 Codex domains (`api.openai.com`, `chatgpt.com`, `oaistatic.com`, `oaiusercontent.com`) are blackholed to `0.0.0.0` so a proxy drop never leaks the user's residential IP.
-- **`m10.proxy_ai_domains`** — Data-driven scan across **7 proxy clients** (Surge / Surge-iCloud / ClashVerge / ClashX / V2RayU / V2RayX / Shadowrocket) verifying AI-brand domain coverage. Auto-extends as new brands are added.
-- **`m10.sandbox_domains`** (extended) — Claude sandbox `allowedDomains` whitelist now includes OpenAI endpoints.
-- **`m10.surge_stun_reject`** (extended) — WebRTC STUN allowlist now covers both Claude and OpenAI domains.
+### ✨ Changed
 
-### 🏗 AIBrands Single Source of Truth
+- LOGO 到 Dashboard 菜单的间距 -30%（40 → 28）
+- 侧边栏菜单每项垂直 padding -10%（18 → 16），5 项合计节省 ~20px 垂直空间
+- 紧凑度提升，整体视觉密度更接近赛博朋克设计意图
 
-New file `Sources/{MacAuditCore,MacAudit}/Modules/AIBrands.swift` centralizes AI brand metadata. Adding a new brand (Gemini / Copilot / DeepSeek) now requires only **one line** in `AIBrands.all`:
+### 🔒 No Change
 
-```swift
-public static let claude = AIBrand(id: "claude", ..., domains: [...], dangerousEnvVars: ["ANTHROPIC_BASE_URL"])
-public static let codex  = AIBrand(id: "codex",  ..., domains: [...], dangerousEnvVars: ["OPENAI_BASE_URL"])
-public static let all: [AIBrand] = [claude, codex]  // ← extend here
-```
-
-`ProxyClients.all` enumerates 7 proxy clients' config directories. Detection commands that need to iterate brands + clients now build dynamically from these arrays instead of hardcoding.
-
-### 💡 Account Hygiene Recommendation
-
-New section in `docs/proxy_rules.md` and README: **Fresh macOS install + iCloud subscription for Claude/Codex** (App Store IAP payment path). Credit-card-based AI subscriptions carry chargeback and fraud-label risks that commonly cascade into account bans. App Store IAP detaches billing from the bank risk chain at the cost of ~30% Apple platform fee.
-
-### 🧹 Internal Quality
-
-- **6 pre-existing M10 B-group env-var detections** unified with `source ~/.zshrc 2>/dev/null;` command prefix (closing the GUI subprocess-doesn't-inherit-shell-env gap that previously caused false positives on macOS where the GUI and CLI reported different results).
-- **M10 active check count lower bound** raised 30 → 33 (reflecting the 3 new checks).
-
-### 🐛 Bug Fixes
-
-- **5 stale `v0.2.13` version strings** in `ReportGenerator.swift` (both CLI + Core copies) and `MacAudit.swift:253` CLI banner — discovered only during VM testing, now aligned to v0.3.1. Markdown + JSON reports now print the correct version.
-- **1 stale v0.3.0 test assertion** in `ReportGeneratorTests.swift:110` — caught during SOP Phase 1 execution.
+- 检测项内容、数量、配置：和 v0.3.1 完全相同
+- fix / undo / baseline / diff：机制和行为不变
+- CLI 输出、JSON / Markdown 报告格式：完全兼容 v0.3.1
+- 724 测试：全部继续通过（GUI 调整不涉及测试断言）
+- **纯 GUI 可视化补丁**，CLI 用户可以跳过本版
 
 ---
 
 ## Breaking Changes
 
-**None.** v0.3.0 users upgrading to v0.3.1 keep all existing check IDs, fix commands, and undo history compatible.
+**None.** v0.3.1 用户升级 v0.3.2 所有功能、配置、fix-history、baseline 完全兼容。
 
 ## Upgrade Notes
 
-- Previous `~/.macaudit/fix-history/` entries stay valid for undo.
-- No config migration required.
-- If you previously set `ANTHROPIC_BASE_URL` or `OPENAI_BASE_URL` via `~/.zshrc`, v0.3.1 will now **warn** on both — remove them to pass the check.
+- 重新下载 zip + 替换旧 `.app` 即可
+- 无需重建 baseline / 清除 history
+- 仍在 v0.3.0 或更早版本的用户：建议直连 v0.3.2，v0.3.1 的 Codex 保护 + AIBrands 架构都已包含
 
 ---
 
-## VM Test Summary
+## VM Test Status
 
-Dual-platform fix/undo closed-loop test (`/tmp/MacAudit_v0.3.1_VM_Test/`):
-
-| Metric | Sequoia 15.6.1 | Tahoe 26.0 |
-|--------|----------------|------------|
-| Total active checks | 384 | 384 |
-| Baseline FAIL | 75 | 92 |
-| Fix effectiveness (fail → pass) | +14 | +14 |
-| Regressions (pass → fail) | 0 | 0 |
-| Undo OK / FAIL | 32 / 3 | 38 / 3 |
-| Drift (baseline vs post-undo) | 2 | 1 |
-
-Drift items are all Siri-plist-cache related (Gotcha #5, pre-existing on VMs with no Siri setup).
-
----
-
-## Architecture Note
-
-This release introduces a lightweight data-layer refactor (`AIBrands.swift`). Future releases may lift additional per-brand detections (e.g., `env_no_openai_base` → `env_no_<brand>_base` auto-generated from `AIBrands.all`) but this patch keeps the existing check IDs stable.
+本版未重跑 VM 实测（改动纯 UI 层，无 detection / fix 逻辑变动）。v0.3.1 在 Sequoia 15.6.1 + Tahoe 26.0 的 fix/undo 闭环验证结果 1:1 继承到 v0.3.2。
 
 ---
 
 **Full changelog**: [CHANGELOG.md](CHANGELOG.md)
-**Full docs**: [docs/proxy_rules.md](docs/proxy_rules.md)
 **Source repo**: https://github.com/Clauder-help-Clauder/Claude-MacAudit
 
 **Clauder Help Clauder.** ⭐

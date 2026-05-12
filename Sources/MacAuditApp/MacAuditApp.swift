@@ -9,9 +9,10 @@ struct MacAuditApp: App {
     var body: some Scene {
         WindowGroup {
             makeMacAuditRootView()
-                .frame(minWidth: 1000, minHeight: 680)
+                .frame(minWidth: 1280, minHeight: 780)
         }
         .windowStyle(.hiddenTitleBar)
-        .defaultSize(width: 1200, height: 760)
+        .defaultSize(width: 1440, height: 860)
+        .windowResizability(.contentMinSize)
     }
 }

@@ -7,10 +7,10 @@ struct MacAuditApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .frame(minWidth: 1080, minHeight: 780)
+                .frame(minWidth: 1280, minHeight: 780)
         }
         .windowStyle(.hiddenTitleBar)
-        .defaultSize(width: 1280, height: 820)
+        .defaultSize(width: 1440, height: 860)
         .windowResizability(.contentMinSize)
     }
 }

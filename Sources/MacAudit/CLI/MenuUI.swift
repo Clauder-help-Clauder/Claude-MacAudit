@@ -50,7 +50,7 @@ struct MenuUI: Sendable {
 
         Layout.printEmpty()
         Layout.printBox([
-            "MacAudit v0.3.1",
+            "MacAudit v0.3.2",
             "Mac 系统审查工具",
         ])
         Layout.printEmpty()
@@ -183,7 +183,7 @@ struct MenuUI: Sendable {
         let maxW = Layout.terminalWidth - 1  // 留 1 字符防止终端自动换行
 
         TerminalInput.clearLine()
-        Swift.print("\(m)\(ANSIColor.dim.wrap("MacAudit v0.3.1 | https://github.com/Clauder-help-Clauder/Claude-MacAudit"))")
+        Swift.print("\(m)\(ANSIColor.dim.wrap("MacAudit v0.3.2 | https://github.com/Clauder-help-Clauder/Claude-MacAudit"))")
         lines += 1
         TerminalInput.clearLine()
         Swift.print("")

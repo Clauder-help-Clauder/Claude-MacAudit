@@ -1,5 +1,7 @@
 # PROXY RULES
 
+[English](proxy_rules_EN.md) · [中文](proxy_rules.md)
+
 > 所有 Claude Code / Codex 流量必须通过住宅 IP（Residential IP）代理出口
 
 ---
@@ -155,6 +157,22 @@ AI-Stable = fallback, 主节点, 备节点1, 备节点2,
 - 🟢 浏览器访问 [browserleaks.com/webrtc] https://browserleaks.com/webrtc  → 确认 No Leak
 - 🟢 浏览器访问 [whoer.net] https://whoer.net → 评分 85+ 且 Proxy 显示 No
 - 🟢 终端运行 `curl ip.sb --proxy $HTTPS_PROXY` → 确认出口为住宅 IP
+
+---
+
+## 账号注册最佳实践（账号层防护）
+
+- 🟢 **强烈推荐：全新安装 macOS**（抹掉所有内容和设置 / 全新安装）
+  - 设备指纹干净，不被旧账号关联
+  - 消除 `~/Library/` 历史登录态、Cookie、Keychain 残留
+- 🟢 **推荐使用 iCloud 账户订阅 Claude / Codex**
+  - 付款走 App Store IAP（App 内购买），**彻底脱离信用卡**
+  - Apple 会加收约 30% 平台抽成，但换来：
+    - 无信用卡盗刷 / chargeback 风险
+    - 无银行风控标签（信用卡跨账号共用是封号高发原因）
+    - 付款合规可追溯（Apple ID 消费记录）
+  - 订阅可一键取消，不会被绑定长期扣款
+- 🔴 信用卡直付的 AI 订阅是封号风险最高的支付方式之一
 
 ---
 

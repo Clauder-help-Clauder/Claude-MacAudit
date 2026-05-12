@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v0.3.2 (2026-05-13)
+
+### Fixed
+- **GUI 默认窗口尺寸 logo 被裁切**（v0.3.1 反馈）：
+  - `defaultSize`: 1200×760 → **1440×860**
+  - `minSize`: 1000×680 → **1280×780**
+  - LOGO 顶部 padding: 16 → **35**（避让 macOS 左上角红绿黄按钮）
+- `MacAuditApp` launcher 补上 `.windowResizability(.contentMinSize)` modifier（原先只 UI 备份版有）
+
+### Changed
+- LOGO 到 Dashboard 菜单间距 -30%（40 → 28）
+- 侧边栏菜单每项高度 -10%（vertical padding 18 → 16），5 项合计节省 ~20px 垂直空间
+- 4 处 `MacAuditApp.swift` / `ContentView.swift` 在 MacAudit 开发树 + Github_upload 发版目录对齐
+
+### No change
+- 检测项内容、fix/undo 机制、CLI 行为、724 测试一切照旧
+- 纯 GUI 可视化微调小版本
+
 ## v0.3.1 (2026-05-12)
 
 ### Added

@@ -34,8 +34,8 @@ struct SidebarView: View {
                 }
             }
             .padding(.horizontal, 24)
-            .padding(.top, 16)
-            .padding(.bottom, 40)
+            .padding(.top, 35)       // 避让 macOS traffic lights (iter: 40 → 35)
+            .padding(.bottom, 28)    // 到 Dashboard 距离：40 → 28 (-30%)
 
             // ── Nav ────────────────────────────────────────
             navItem(.dashboard,  icon: "square.grid.2x2.fill",  label: "Dashboard")
@@ -118,7 +118,7 @@ struct SidebarView: View {
                 Spacer()
             }
             .foregroundStyle(isActive ? Color.neonGreen : Color(hex: "#6B8F62"))
-            .padding(.vertical, 18)
+            .padding(.vertical, 16)     // 每项高度缩小 10% (18 → 16)
             .padding(.leading, 24)
             .padding(.trailing, 16)
             .contentShape(Rectangle())
@@ -153,7 +153,7 @@ struct SidebarView: View {
                     .tracking(0.5)
             }
             .foregroundStyle(isActive ? Color(hex: "#FF4444") : Color(hex: "#FF6666").opacity(0.8))
-            .padding(.vertical, 18)
+            .padding(.vertical, 16)     // 与 navItem 对齐：18 → 16 (-10%)
             .padding(.leading, 24)
             .padding(.trailing, 16)
             .contentShape(Rectangle())

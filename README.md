@@ -18,7 +18,7 @@
 
 MacAudit is a native macOS system security audit and optimization tool built in **Swift 6 with strict concurrency**. It performs **400+ automated checks** across 12 audit modules, covering security hardening, privacy protection, network configuration, performance tuning, and AI service compatibility — all with **zero third-party runtime dependencies**.
 
-> 🛠 **Live build metrics** — Version: **v0.3.1** · Released: **2026-05-12** · Cumulative AI tokens invested (v0.1.0 → present): **~2.6B+ I/O + ~16B+ cache** (across Claude / GPT / Gemini / Codex / local models and hundreds of sessions)
+> 🛠 **Live build metrics** — Version: **v0.3.2** · Released: **2026-05-13** · Cumulative AI tokens invested (v0.1.0 → present): **~2.8B+ I/O + ~18B+ cache** (across Claude / GPT / Gemini / Codex / local models and hundreds of sessions)
 
 > **From Python script to Swift native app — 1 month, 5 milestones, 5 rounds of expert audits, 720+ tests, and real-machine validation across two macOS generations.**
 
@@ -46,7 +46,8 @@ Latest 5 releases. Full history: [Releases](https://github.com/Clauder-help-Clau
 
 | Version | Date | Highlights | Release |
 |---------|------|------------|---------|
-| **v0.3.1** | 2026-05-12 | Codex / OpenAI account protection (3 new A0 checks), AIBrands extensible architecture, iCloud subscription recommendation | [→ v0.3.1](https://github.com/Clauder-help-Clauder/Claude-MacAudit/releases/tag/v0.3.1) |
+| **v0.3.2** | 2026-05-13 | GUI window polish — default size 1440×860, logo padding avoids macOS traffic lights, tighter sidebar spacing | [→ v0.3.2](https://github.com/Clauder-help-Clauder/Claude-MacAudit/releases/tag/v0.3.2) |
+| v0.3.1 | 2026-05-12 | Codex / OpenAI account protection (3 new A0 checks), AIBrands extensible architecture, iCloud subscription recommendation | [→ v0.3.1](https://github.com/Clauder-help-Clauder/Claude-MacAudit/releases/tag/v0.3.1) |
 | v0.3.0 | 2026-05-11 | Stable release — idempotent fixes (sed delete-then-append), verified execution, security hardened, 10-round VM stability | [→ v0.3.0](https://github.com/Clauder-help-Clauder/Claude-MacAudit/releases/tag/v0.3.0) |
 
 ---

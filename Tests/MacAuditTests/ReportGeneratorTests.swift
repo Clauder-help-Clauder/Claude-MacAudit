@@ -107,7 +107,7 @@ func jsonHasVersionKey() {
     let data = json.data(using: .utf8)!
     let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
     // Parse JSON and verify version key exists with expected string value
-    #expect(obj?["version"] as? String == "0.3.1")
+    #expect(obj?["version"] as? String == "0.3.2")
 }
 
 @Test("ReportGenerator JSON contains summary with correct total")
